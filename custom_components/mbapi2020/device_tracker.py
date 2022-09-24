@@ -7,7 +7,7 @@ https://github.com/ReneNulschDE/mbapi2020/
 import logging
 from typing import Optional
 
-from homeassistant.components.device_tracker import SOURCE_TYPE_GPS
+from homeassistant.components.device_tracker import SourceType
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.helpers.restore_state import RestoreEntity
 
@@ -32,20 +32,18 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     sensor_list = []
 
-
     for car in data.client.cars:
         for key, value in sorted(DEVICE_TRACKER.items()):
-#            if value[5] is None or getattr(car.features, value[5]) is True:
+            #            if value[5] is None or getattr(car.features, value[5]) is True:
             device = MercedesMEDeviceTracker(
                 hass=hass,
                 data=data,
-                internal_name = key,
-                sensor_config = value,
-                vin = car.finorvin
-                )
-            if device.device_retrieval_status() in ["VALID", "NOT_RECEIVED"] :
+                internal_name=key,
+                sensor_config=value,
+                vin=car.finorvin,
+            )
+            if device.device_retrieval_status() in ["VALID", "NOT_RECEIVED"]:
                 sensor_list.append(device)
-
 
     async_add_entities(sensor_list, True)
 
@@ -68,8 +66,8 @@ class MercedesMEDeviceTracker(MercedesMeEntity, TrackerEntity, RestoreEntity):
     @property
     def source_type(self):
         """Return the source type, eg gps or router, of the device."""
-        return SOURCE_TYPE_GPS
+        return SourceType.GPS
 
-    @ property
+    @property
     def device_class(self):
         return None
